@@ -1,5 +1,6 @@
 import {
   AfterViewChecked,
+  ChangeDetectorRef,
   Component,
   DoCheck,
   ElementRef,
@@ -114,6 +115,7 @@ export class FullCalendarComponent implements OnInit, OnDestroy, AfterViewChecke
   config: any;
 
   constructor(private el: ElementRef,
+    private cdRef: ChangeDetectorRef,
     differs: IterableDiffers) {
     this.eventDiffer = differs.find([]).create(null);
     this.resourceDiffer = differs.find([]).create(null);
@@ -308,6 +310,9 @@ export class FullCalendarComponent implements OnInit, OnDestroy, AfterViewChecke
     });
     this.calendar = new FullCalendar.Calendar(this.el.nativeElement, this.config);
     this.calendar.render();
+    if (this.events) {
+      this.calendar.addEventSource(this.events);
+    }
     this.initialized = true;
   }
 

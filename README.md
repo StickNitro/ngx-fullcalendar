@@ -1,5 +1,13 @@
 # ngx-fullcalendar
 
+[![GitHub issues](https://img.shields.io/github/issues/StickNitro/ngx-fullcalendar.svg)](https://github.com/StickNitro/ngx-fullcalendar/issues)
+[![GitHub forks](https://img.shields.io/github/forks/StickNitro/ngx-fullcalendar.svg)](https://github.com/StickNitro/ngx-fullcalendar/network)
+[![GitHub stars](https://img.shields.io/github/stars/StickNitro/ngx-fullcalendar.svg)](https://github.com/StickNitro/ngx-fullcalendar/stargazers)
+[![GitHub license](https://img.shields.io/github/license/StickNitro/ngx-fullcalendar.svg)](https://github.com/StickNitro/ngx-fullcalendar/blob/master/LICENSE)
+
+[![latest](https://img.shields.io/npm/v/ngx-fullcalendar/latest.svg)](http://www.npmjs.com/package/ngx-fullcalendar) 
+[![npm](https://img.shields.io/npm/dt/ngx-fullcalendar.svg)](https://www.npmjs.com/package/ngx-fullcalendar)
+
 This package wraps the [fullcalendar](https://fullcalendar.io) module for Angular v6 and above.
 
 # Installation
