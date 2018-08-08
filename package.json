@@ -1,6 +1,6 @@
 {
   "name": "ngx-fullcalendar",
-  "version": "4.0.0",
+  "version": "4.0.2",
   "bugs": {
     "url": "https://github.com/StickNitro/ngx-fullcalendar/issues"
   },
@@ -14,7 +14,7 @@
     "url": "https://github.com/StickNitro/ngx-fullcalendar.git"
   },
   "homepage": "https://github.com/StickNitro/ngx-fullcalendar",
-  "description": "An Angular wrapper for the https://fullcalendar.io module",
+  "description": "An Angular wrapper for the fullcalendar and fullcalendar-scheduler module",
   "peerDependencies": {
     "@angular/common": "^6.0.0-rc.0 || ^6.0.0",
     "@angular/core": "^6.0.0-rc.0 || ^6.0.0",
