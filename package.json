@@ -1,0 +1,26 @@
+{
+  "name": "ngx-fullcalendar",
+  "version": "4.0.0",
+  "bugs": {
+    "url": "https://github.com/StickNitro/ngx-fullcalendar/issues"
+  },
+  "author": {
+    "name": "Neil Stevens",
+    "email": "stevensn99@gmail.com"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/StickNitro/ngx-fullcalendar.git"
+  },
+  "homepage": "https://github.com/StickNitro/ngx-fullcalendar",
+  "description": "An Angular wrapper for the https://fullcalendar.io module",
+  "peerDependencies": {
+    "@angular/common": "^6.0.0-rc.0 || ^6.0.0",
+    "@angular/core": "^6.0.0-rc.0 || ^6.0.0",
+    "fullcalendar": "^4.0.0-alpha || ^4.0.0",
+    "fullcalendar-scheduler": "^4.0.0-alpha.2 || ^4.0.0",
+    "moment": "^2.22.2",
+    "dragula": "^3.7.2"
+  }
+}
