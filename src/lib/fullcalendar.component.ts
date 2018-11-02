@@ -127,11 +127,12 @@ export class FullCalendarComponent implements OnInit, OnDestroy, AfterViewChecke
     this.config.resources = (callback) => {
       callback(this.resources || []);
     };
-    this.config.dayClick = (date, jsEvent, view) => {
+    this.config.dayClick = (date, jsEvent, view, resourceId?) => {
       this.onDayClick.emit({
         'date': date,
         'jsEvent': jsEvent,
-        'view': view
+        'view': view,
+        'resourceId': resourceId
       });
     };
     this.config.drop = (date, jsEvent, ui, resourceId) => {
