@@ -152,6 +152,7 @@ There are also the following events that can be bound:
   - 'date': the moment like date that was clicked
   - 'jsEvent': the native javascript event object
   - 'view': A reference to the current view
+  - 'resourceId': (optional) will be populated if dropped on a Scheduler resource
 
 * **onDrop**: Is emitted when a valid external UI draggable has been dropped onto the calendar.
 
