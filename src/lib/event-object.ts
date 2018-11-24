@@ -2,7 +2,7 @@ export interface EventObject {
   id?: string | number;
   title: string;
   allDay?: boolean;
-  start: string | number;
+  start?: string | number;
   end?: string | number;
   url?: string;
   className?: string | string[];
