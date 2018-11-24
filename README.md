@@ -47,6 +47,13 @@ Modify your `angular.json` to import the relevant scripts and styles, it should 
 ]
 ```
 
+Finally, install ngx-fullcalendar
+
+```
+foo@bar:~$ npm install ngx-fullcalendar
+```
+
+
 # Getting Started
 
 Import the `ngx-fullcalendar' module.
