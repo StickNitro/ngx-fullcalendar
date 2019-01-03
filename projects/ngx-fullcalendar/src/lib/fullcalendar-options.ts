@@ -1,9 +1,10 @@
 export interface FullCalendarOptions {
   header?: any;
-  isRTL?: boolean;
+  dir?: string;
   weekends?: boolean;
   hiddenDays?: number[];
   fixedWeekCount?: boolean;
+  showNonCurrentDates?: boolean;
   weekNumbers?: boolean;
   businessHours?: any;
   height?: any;
@@ -12,8 +13,8 @@ export interface FullCalendarOptions {
   eventLimit?: any;
   defaultDate?: any;
   locale?: string;
-  timezone?: boolean | string;
-  timeFormat?: string | null;
+  timeZone?: string;
+  evenTimeFormat?: string | Object;
   editable?: boolean;
   droppable?: boolean;
   eventStartEditable?: boolean;
@@ -36,4 +37,22 @@ export interface FullCalendarOptions {
   eventConstraint?: any;
   dayRender?: Function;
   navLinks?: boolean;
+  // new in v4
+  titleFormat?: string | Object;
+  titleRangeSeparator?: string;
+  defaultRangeSeparator?: string;
+  defaultTimedEventDuration?: string | Object; // Duration
+  defaultAllDayEventDuration?: string | Object; // Duration
+  columnHeaderFormat?: string | Object; // Date Formatting
+  slotLabelFormat?: string | Object; // Date Formatting
+  columnHeaderText?: Function;
+  nextDayThreshold?: string | Object; // Duration
+  eventOrder?: string | Array<string | Function> | Function;
+  rerenderDelay?: number | null;
+  progressiveEventRendering?: boolean;
+  eventResizableFromStart?: boolean;
+  eventDragMinDistance?: number;
+  allDayMaintainDuration?: boolean;
+  listDayFormat?: string | Object;
+  listDayAltFormat?: string | Object;
 }

@@ -12,16 +12,19 @@ import {
   Output,
   SimpleChanges,
 } from '@angular/core';
+import { Calendar, Draggable, formatDate } from 'fullcalendar';
 
 import { EventObject } from './event.object';
 import { FullCalendarOptions } from './fullcalendar-options';
 import { ResourceObject } from './resource-object';
 
-declare const FullCalendar: any;
+// declare const FullCalendar: any;
 
 const defaultConfig: FullCalendarOptions = {
   aspectRatio: 1.35,
   defaultView: 'month',
+  fixedWeekCount: true,
+  showNonCurrentDates: true,
   allDaySlot: true,
   allDayText: 'all-day',
   slotDuration: '00:30:00',
@@ -32,8 +35,18 @@ const defaultConfig: FullCalendarOptions = {
   dragRevertDuration: 500,
   dragOpacity: .75,
   dragScroll: true,
-  timezone: false,
-  timeFormat: null
+  timeZone: 'local',
+  titleFormat: {
+    year: 'numeric',
+    month: 'long'
+  },
+  titleRangeSeparator: ' \u2013 ',
+  defaultRangeSeparator: ' - ',
+  dir: 'ltr',
+  defaultTimedEventDuration: '01:00',
+  defaultAllDayEventDuration: { days: 1 },
+  eventOrder: 'start,-duration,allDay,title',
+  rerenderDelay: null
 };
 
 @Component({
@@ -42,13 +55,14 @@ const defaultConfig: FullCalendarOptions = {
 })
 export class FullCalendarComponent implements OnInit, OnDestroy, AfterViewChecked, DoCheck, OnChanges {
 
-  @Input() droppableRef: any;
+  @Input() draggableEl: any;
+  @Input() containerEl: any;
+  @Input() itemSelector: string;
   @Input() options: FullCalendarOptions;
 
   @Input() events: Array<EventObject>;
   @Input() resources: Array<ResourceObject>;
   @Input() header: any;
-  @Input() isRTL: boolean;
   @Input() weekends: boolean;
   @Input() hiddenDays: number[];
   @Input() fixedWeekCount: boolean;
@@ -80,17 +94,37 @@ export class FullCalendarComponent implements OnInit, OnDestroy, AfterViewChecke
   @Input() eventOverlap: any;
   @Input() eventConstraint: any;
   @Input() locale: string;
-  @Input() timezone: boolean | string;
-  @Input() timeFormat: string | null;
+  @Input() timeZone: string;
+  @Input() eventTimeFormat: string | Object;
   @Input() dayRender: Function;
   @Input() navLinks: boolean;
+  // new in v4
+  @Input() titleFormat: string | Object;
+  @Input() titleRangeSeparator: string;
+  @Input() defaultRangeSeparator: string;
+  @Input() dir: string;
+  @Input() defaultTimedEventDuration: string | Object;
+  @Input() defaultAllDayEventDuration: string | Object;
+  @Input() showNonCurrentDates: boolean;
+  @Input() columnHeaderFormat: string | Object;
+  @Input() slotLabelFormat: string | Object;
+  @Input() columnHeaderText: Function;
+  @Input() nextDayThreshold: string | Object;
+  @Input() eventOrder: string | Array<string | Function> | Function;
+  @Input() rerenderDelay: number | null;
+  @Input() progressiveEventRendering: boolean;
+  @Input() eventResizableFromStart: boolean;
+  @Input() eventDragMinDistance: number;
+  @Input() allDayMaintainDuration: boolean;
+  @Input() listDayFormat: string | Object;
+  @Input() listDayAltFormat: string | Object;
 
   // tslint:disable:no-output-on-prefix
-  @Output() onDayClick: EventEmitter<any> = new EventEmitter();
+  @Output() onDateClick: EventEmitter<any> = new EventEmitter();
   @Output() onDrop: EventEmitter<any> = new EventEmitter();
   @Output() onEventClick: EventEmitter<any> = new EventEmitter();
-  @Output() onEventMouseover: EventEmitter<any> = new EventEmitter();
-  @Output() onEventMouseout: EventEmitter<any> = new EventEmitter();
+  @Output() onEventMouseEnter: EventEmitter<any> = new EventEmitter();
+  @Output() onEventMouseLeave: EventEmitter<any> = new EventEmitter();
   @Output() onEventDragStart: EventEmitter<any> = new EventEmitter();
   @Output() onEventDragStop: EventEmitter<any> = new EventEmitter();
   @Output() onEventDrop: EventEmitter<any> = new EventEmitter();
@@ -98,13 +132,19 @@ export class FullCalendarComponent implements OnInit, OnDestroy, AfterViewChecke
   @Output() onEventResizeStart: EventEmitter<any> = new EventEmitter();
   @Output() onEventResizeStop: EventEmitter<any> = new EventEmitter();
   @Output() onEventResize: EventEmitter<any> = new EventEmitter();
-  @Output() onViewRender: EventEmitter<any> = new EventEmitter();
-  @Output() onViewDestroy: EventEmitter<any> = new EventEmitter();
+  @Output() onDatesRender: EventEmitter<any> = new EventEmitter();
+  @Output() onDatesDestroy: EventEmitter<any> = new EventEmitter();
+  @Output() onViewSkeletonRender: EventEmitter<any> = new EventEmitter();
+  @Output() onViewSkeletonDestroy: EventEmitter<any> = new EventEmitter();
   @Output() onNavLinkDayClick: EventEmitter<any> = new EventEmitter();
   @Output() onNavLinkWeekClick: EventEmitter<any> = new EventEmitter();
   @Output() onEventRender: EventEmitter<any> = new EventEmitter();
   @Output() onEventDestroy: EventEmitter<any> = new EventEmitter();
-  @Output() onEventAfterRender: EventEmitter<any> = new EventEmitter();
+  @Output() onEventPositioned: EventEmitter<any> = new EventEmitter();
+  @Output() onDayRender: EventEmitter<any> = new EventEmitter();
+  @Output() onSelect: EventEmitter<any> = new EventEmitter();
+  @Output() onUnselect: EventEmitter<any> = new EventEmitter();
+  @Output() onResourceRender: EventEmitter<any> = new EventEmitter();
   // tslint:enable:no-output-on-prefix
 
   calendar: any;
@@ -125,112 +165,70 @@ export class FullCalendarComponent implements OnInit, OnDestroy, AfterViewChecke
     this.config.resources = (fetchInfo, successCallback, failureCallback) => {
       successCallback(this.resources || []);
     };
-    this.config.dayClick = (date, jsEvent, view, resourceId?) => {
-      this.onDayClick.emit({
-        'date': date,
-        'jsEvent': jsEvent,
-        'view': view,
-        'resourceId': resourceId
+    this.config.dateClick = (dateClickInfo) => {
+      this.onDateClick.emit(dateClickInfo);
+    };
+    this.config.dayRender = (dayRenderInfo) => {
+      this.onDayRender.emit(dayRenderInfo);
+    };
+    this.config.drop = (dropInfo) => {
+      this.onDrop.emit(dropInfo);
+    };
+    this.config.eventClick = (eventClickInfo) => {
+      this.onEventClick.emit(eventClickInfo);
+    };
+    this.config.eventMouseEnter = (mouseEnterInfo) => {
+      this.onEventMouseEnter.emit(mouseEnterInfo);
+    };
+    this.config.eventMouseLeave = (mouseLeaveInfo) => {
+      this.onEventMouseLeave.emit(mouseLeaveInfo);
+    };
+    this.config.eventDragStart = (info) => {
+      this.onEventDragStart.emit(info);
+    };
+    this.config.eventDragStop = (info) => {
+      this.onEventDragStop.emit(info);
+    };
+    this.config.eventDrop = (eventDropInfo) => {
+      this._updateEvent(eventDropInfo.event);
+      this.onEventDrop.emit(eventDropInfo);
+    };
+    this.config.eventReceive = (info) => {
+      this.onEventReceive.emit(info);
+    };
+    this.config.eventResizeStart = (info) => {
+      this.onEventResizeStart.emit(info);
+    };
+    this.config.eventResizeStop = (info) => {
+      this.onEventResizeStop.emit(info);
+    };
+    this.config.eventResize = (eventResizeInfo) => {
+      this._updateEvent(eventResizeInfo.event);
+      this.onEventResize.emit(eventResizeInfo);
+    };
+    this.config.datesRender = (info) => {
+      this.onDatesRender.emit({
+        'info': info
       });
     };
-    this.config.drop = (date, jsEvent, ui, resourceId) => {
-      this.onDrop.emit({
-        'date': date,
-        'jsEvent': jsEvent,
-        'resourceId': resourceId
+    this.config.datesDestroy = (info) => {
+      this.onDatesDestroy.emit({
+        'info': info
       });
     };
-    this.config.eventClick = (calEvent, jsEvent, view) => {
-      this.onEventClick.emit({
-        'calEvent': calEvent,
-        'jsEvent': jsEvent,
-        'view': view
+    this.config.viewSkeletonRender = (info) => {
+      this.onViewSkeletonRender.emit({
+        'info': info
       });
     };
-    this.config.eventMouseover = (calEvent, jsEvent, view) => {
-      this.onEventMouseover.emit({
-        'calEvent': calEvent,
-        'jsEvent': jsEvent,
-        'view': view
+    this.config.viewSkeletonDestroy = (info) => {
+      this.onViewSkeletonDestroy.emit({
+        'info': info
       });
     };
-    this.config.eventMouseout = (calEvent, jsEvent, view) => {
-      this.onEventMouseout.emit({
-        'calEvent': calEvent,
-        'jsEvent': jsEvent,
-        'view': view
-      });
-    };
-    this.config.eventDragStart = (event, jsEvent, ui, view) => {
-      this.onEventDragStart.emit({
-        'event': event,
-        'jsEvent': jsEvent,
-        'view': view
-      });
-    };
-    this.config.eventDragStop = (event, jsEvent, ui, view) => {
-      this.onEventDragStop.emit({
-        'event': event,
-        'jsEvent': jsEvent,
-        'view': view
-      });
-    };
-    this.config.eventDrop = (event, delta, revertFunc, jsEvent, ui, view) => {
-      this._updateEvent(event);
-
-      this.onEventDrop.emit({
-        'event': event,
-        'delta': delta,
-        'revertFunc': revertFunc,
-        'jsEvent': jsEvent,
-        'view': view
-      });
-    };
-    this.config.eventReceive = (event) => {
-      this.onEventReceive.emit({
-        'event': event
-      });
-    };
-    this.config.eventResizeStart = (event, jsEvent, ui, view) => {
-      this.onEventResizeStart.emit({
-        'event': event,
-        'jsEvent': jsEvent,
-        'view': view
-      });
-    };
-    this.config.eventResizeStop = (event, jsEvent, ui, view) => {
-      this.onEventResizeStop.emit({
-        'event': event,
-        'jsEvent': jsEvent,
-        'view': view
-      });
-    };
-    this.config.eventResize = (event, delta, revertFunc, jsEvent, ui, view) => {
-      this._updateEvent(event);
-
-      this.onEventResize.emit({
-        'event': event,
-        'delta': delta,
-        'revertFunc': revertFunc,
-        'jsEvent': jsEvent,
-        'view': view
-      });
-    };
-    this.config.viewRender = (view, element) => {
-      this.onViewRender.emit({
-        'view': view,
-        'element': element
-      });
-    };
-    this.config.viewDestroy = (view, element) => {
-      this.onViewDestroy.emit({
-        'view': view,
-        'element': element
-      });
-    };
-    this.config.navLinkDayClick = (weekStart, jsEvent) => {
+    this.config.navLinkDayClick = (date, jsEvent) => {
       this.onNavLinkDayClick.emit({
-        'weekStart': weekStart,
+        'date': date,
         'jsEvent': jsEvent
       });
     };
@@ -240,26 +238,26 @@ export class FullCalendarComponent implements OnInit, OnDestroy, AfterViewChecke
         'jsEvent': jsEvent
       });
     };
-    this.config.eventRender = (event, element, view) => {
-      this.onEventRender.emit({
-        'event': event,
-        'element': element,
+    this.config.eventRender = (info) => {
+      this.onEventRender.emit(info);
+    };
+    this.config.eventDestroy = (info) => {
+      this.onEventDestroy.emit(info);
+    };
+    this.config.eventPositioned = (info) => {
+      this.onEventPositioned.emit(info);
+    };
+    this.config.select = (selectionInfo) => {
+      this.onSelect.emit(selectionInfo);
+    };
+    this.config.unselect = (jsEvent, view) => {
+      this.onUnselect.emit({
+        'jsEvent': jsEvent,
         'view': view
       });
     };
-    this.config.eventDestroy = (event, element, view) => {
-      this.onEventDestroy.emit({
-        'event': event,
-        'element': element,
-        'view': view
-      });
-    };
-    this.config.eventAfterRender = (event, element, view) => {
-      this.onEventAfterRender.emit({
-        'event': event,
-        'element': element,
-        'view': view
-      });
+    this.config.resourceRender = (renderInfo) => {
+      this.onResourceRender.emit(renderInfo);
     };
   }
 
@@ -303,12 +301,21 @@ export class FullCalendarComponent implements OnInit, OnDestroy, AfterViewChecke
   }
 
   private initialize() {
-    // FullCalendar.dragula({
-    //   containers: [this.droppableRef],
-    //   copy: true
-    // });
-    this.calendar = new FullCalendar.Calendar(this.el.nativeElement, this.config);
+    this.calendar = new Calendar(this.el.nativeElement, this.config);
     this.calendar.render();
+
+    if (!!this.draggableEl || !!this.containerEl) {
+      if (!!this.draggableEl) {
+        // tslint:disable-next-line:no-unused-expression
+        new Draggable(this.draggableEl);
+      } else if (this.containerEl) {
+        // tslint:disable-next-line:no-unused-expression
+        new Draggable(this.containerEl, {
+          itemSelector: this.itemSelector
+        });
+      }
+    }
+
     if (this.events) {
       this.calendar.addEventSource(this.events);
     }
@@ -319,7 +326,6 @@ export class FullCalendarComponent implements OnInit, OnDestroy, AfterViewChecke
     const configFromAttrs = {
       // tslint:disable:no-non-null-assertion
       header: this.header!,
-      isRTL: this.isRTL!,
       weekends: this.weekends!,
       hiddenDays: this.hiddenDays!,
       fixedWeekCount: this.fixedWeekCount!,
@@ -331,8 +337,8 @@ export class FullCalendarComponent implements OnInit, OnDestroy, AfterViewChecke
       eventLimit: this.eventLimit!,
       defaultDate: this.defaultDate!,
       locale: this.locale!,
-      timezone: this.timezone!,
-      timeFormat: this.timeFormat!,
+      timeZone: this.timeZone!,
+      eventTimeFormat: this.eventTimeFormat!,
       editable: this.editable!,
       droppable: this.droppable!,
       eventStartEditable: this.eventStartEditable!,
@@ -355,6 +361,26 @@ export class FullCalendarComponent implements OnInit, OnDestroy, AfterViewChecke
       eventConstraint: this.eventConstraint!,
       dayRender: this.dayRender!,
       navLinks: this.navLinks!,
+      // new in v4
+      titleFormat: this.titleFormat!,
+      titleRangeSeparator: this.titleRangeSeparator!,
+      defaultRangeSeparator: this.defaultRangeSeparator!,
+      dir: this.dir!,
+      defaultTimedEventDuration: this.defaultTimedEventDuration!,
+      defaultAllDayEventDuration: this.defaultAllDayEventDuration!,
+      showNonCurrentDates: this.showNonCurrentDates!,
+      columnHeaderFormat: this.columnHeaderFormat!,
+      slotLabelFormat: this.slotLabelFormat!,
+      columnHeaderText: this.columnHeaderText!,
+      nextDayThreshold: this.nextDayThreshold!,
+      eventOrder: this.eventOrder!,
+      rerenderDelay: this.rerenderDelay!,
+      progressiveEventRendering: this.progressiveEventRendering!,
+      eventResizableFromStart: this.eventResizableFromStart!,
+      eventDragMinDistance: this.eventDragMinDistance!,
+      allDayMaintainDuration: this.allDayMaintainDuration!,
+      listDayFormat: this.listDayFormat!,
+      listDayAltFormat: this.listDayAltFormat!,
       // tslint:enable:no-non-null-assertion
     };
 
@@ -366,11 +392,12 @@ export class FullCalendarComponent implements OnInit, OnDestroy, AfterViewChecke
   }
 
   private _updateEvent(event: any) {
+    console.log(event);
     const sourceEvent = this._findEvent(event.id);
     if (sourceEvent) {
-      sourceEvent.start = event.start.format();
+      sourceEvent.start = formatDate(event.start);
       if (event.end) {
-        sourceEvent.end = event.end.format();
+        sourceEvent.end = formatDate(event.end);
       }
       if (event.resourceId) {
         sourceEvent.resourceId = event.resourceId;

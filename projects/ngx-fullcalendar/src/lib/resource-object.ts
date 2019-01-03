@@ -8,4 +8,8 @@ export interface ResourceObject {
   eventClassName?: string | string[];
   businessHours?: any;
   parentId?: string;
+  eventOverlap?: boolean | Function;
+  eventConstraint?: any;
+  eventAllow?: Function;
+  extendedProps?: { [key: string]: any };
 }

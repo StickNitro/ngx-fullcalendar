@@ -2,8 +2,8 @@ export interface EventObject {
   id?: string | number;
   title: string;
   allDay?: boolean;
-  start?: string | number;
-  end?: string | number;
+  start?: string | Date;
+  end?: string | Date;
   url?: string;
   className?: string | string[];
   editable?: boolean;
@@ -15,8 +15,16 @@ export interface EventObject {
   rendering?: '' | 'background' | 'inverse-background';
   overlap?: boolean;
   constraint?: any;
-  color?: string;
   backgroundColor?: string;
   borderColor?: string;
   textColor?: string;
+  // new in v4
+  groupId?: string;
+  extendedProps?: { [key: string]: any };
+  // simple event recurrence properties
+  startTime?: Object; // needs API object defining
+  endTime?: Object; // needs API object defining
+  daysOfWeek?: Array<number>;
+  startRecur?: string | Date;
+  endRecur?: string | Date;
 }

@@ -1,4 +1,10 @@
 <!--The content below is only a placeholder and can be replaced.-->
 <div>
-  <ngx-fullcalendar defaultView="month" [events]="events" [options]="options"></ngx-fullcalendar>
+  <div #draggable>
+    <div class="item-class" data-event='{"title": "Some Event", "startTime": "08:00", "duration": "01:00"}'>Some
+      Event</div>
+  </div>
+  <ngx-fullcalendar defaultView="month" [containerEl]="draggable" itemSelector=".item-class"
+    [events]="events" [options]="options" (onDrop)="log('onDrop', $event)" (onEventReceive)="log('onEventReceive', $event)"
+    (onEventDrop)="log('onEventDrop', $event)"></ngx-fullcalendar>
 </div>
