@@ -10,6 +10,8 @@
 
 This package wraps the [fullcalendar](https://fullcalendar.io) module for Angular v6 and above.
 
+## **WARNING**: This release contains breaking changes from fullcalendar v4 Alpha 3 and fullcalendar-scheduler v4 Alpha 3. [Read the full Upgrade Guide »](https://fullcalendar.io/docs/v4/release-notes)
+
 # Installation
 
 Install via [NPM](https://npmjs.com)
@@ -17,14 +19,8 @@ Install via [NPM](https://npmjs.com)
 First install the peer dependencies, this is currently based around the fullcalendar v4 package which is in alpha, so install this version
 
 ```
-npm install fullcalendar@4.0.0-alpha
-npm install fullcalendar-scheduler@4.0.0-alpha.2
-```
-
-We also need to include [moment](https://momentjs.com) and [dragula](https://bevacqua.github.io/dragula/)
-
-```
-foo@bar:~$ npm install moment dragula
+npm install fullcalendar@alpha
+npm install fullcalendar-scheduler@alpha
 ```
 
 Modify your `angular.json` to import the relevant scripts and styles, it should look like this:
@@ -32,27 +28,22 @@ Modify your `angular.json` to import the relevant scripts and styles, it should 
 ```json
 "styles": [
   ...
-  "node_modules/dragula/dist/dragula.min.css",
   "node_modules/fullcalendar/dist/fullcalendar.min.css",
   "node_modules/fullcalendar-scheduler/dist/scheduler.min.css",
   ...
 ],
 "scripts": [
   ...
-  "./node_modules/moment/moment.js",
-  "./node_modules/dragula/dist/dragula.min.js",
   "./node_modules/fullcalendar/dist/fullcalendar.min.js",
-  "./node_modules/fullcalendar/dist/dragula.min.js",
   "./node_modules/fullcalendar-scheduler/dist/scheduler.min.js"
 ]
 ```
 
-Finally, install ngx-fullcalendar
+And finally, install ngx-fullcalendar
 
 ```
-foo@bar:~$ npm install ngx-fullcalendar
+foo@bar:~$ npm install ngx-fullcalendar@alpha
 ```
-
 
 # Getting Started
 
@@ -113,10 +104,11 @@ You can initialize the `ngx-fullcalendar` with the `FullCalendarOptions` object 
 ```typescript
 export interface FullCalendarOptions {
   header?: any;
-  isRTL?: boolean;
+  dir?: string;
   weekends?: boolean;
   hiddenDays?: number[];
   fixedWeekCount?: boolean;
+  showNonCurrentDates?: boolean;
   weekNumbers?: boolean;
   businessHours?: any;
   height?: any;
@@ -125,8 +117,8 @@ export interface FullCalendarOptions {
   eventLimit?: any;
   defaultDate?: any;
   locale?: string;
-  timezone?: boolean | string;
-  timeFormat?: string | null;
+  timeZone?: string;
+  evenTimeFormat?: string | Object;
   editable?: boolean;
   droppable?: boolean;
   eventStartEditable?: boolean;
@@ -149,99 +141,267 @@ export interface FullCalendarOptions {
   eventConstraint?: any;
   dayRender?: Function;
   navLinks?: boolean;
+  titleFormat?: string | Object;
+  titleRangeSeparator?: string;
+  defaultRangeSeparator?: string;
+  defaultTimedEventDuration?: string | Object;
+  defaultAllDayEventDuration?: string | Object;
+  columnHeaderFormat?: string | Object;
+  slotLabelFormat?: string | Object;
+  columnHeaderText?: Function;
+  nextDayThreshold?: string | Object;
+  eventOrder?: string | Array<string | Function> | Function;
+  rerenderDelay?: number | null;
+  progressiveEventRendering?: boolean;
+  eventResizableFromStart?: boolean;
+  eventDragMinDistance?: number;
+  allDayMaintainDuration?: boolean;
+  listDayFormat?: string | Object;
+  listDayAltFormat?: string | Object;
 }
 ```
 
 There are also the following events that can be bound:
 
-* **onDayClick**: Is emitted when the user clicks on a day in the `fullcalendar`.
+* **onDateClick**: Is emitted when the user clicks on a day in the `fullcalendar`.
 
-  - 'date': the moment like date that was clicked
-  - 'jsEvent': the native javascript event object
-  - 'view': A reference to the current view
-  - 'resourceId': (optional) will be populated if dropped on a Scheduler resource
+  ```typescript
+  function (dateClickInfo) { }
+  ```
+
+  `dateClickInfo` is a plain object with the following properties:
+  
+  | prop | description |
+  | --- | --- |
+  | date | a Date for the clicked day/time. |
+  | dateStr | An ISO8601 string representation of the date. Will have a time zone offset according to the calendar’s timeZone like `2018-09-01T12:30:00-05:00`. If clicked on an all-day cell, won’t have a time part nor a time zone part, like `2018-09-01`. |
+  | allDay | `true` or `false` whether the click happened on an all-day cell. |
+  | dayEl | An HTML element that represents the whole-day that was clicked on. |
+  | jsEvent | The native JavaScript event with low-level information such as click coordinates. |
+  | view | The current View Object. |
+  | resource | If the current view is a resource-view, the Resource Object that owns this date. Must be using the Scheduler plugin. |
 
 * **onDrop**: Is emitted when a valid external UI draggable has been dropped onto the calendar.
 
-  - 'date': the moment like date that was clicked
-  - 'jsEvent': the native javascript event object
-  - 'resourceId': will be populated if dropped on a Scheduler resource
+  ```typescript
+  function (dropInfo) { }
+  ```
+
+  ```dropInfo``` is a plain object with the following properties:
+
+  | prop | description |
+  | --- | --- |
+  | draggedEl | The HTML element that was being dragged. |
+  | date | The Date of where the draggable was dropped. |
+  | resource | If the current view is a resource-view, the Resource Object the element was dropped on. Must be using the Scheduler plugin. |
+  | allDay | `true` or `false` whether dropped on one of the all-day cells. |
+  | jsEvent | The native JavaScript event with low-level information such as click coordinates. |
+  | view | The current View Object. |
 
 * **onEventClick**: Is emitted when an event is clicked.
 
-  - 'calEvent': the calender event object
-  - 'jsEvent': the native javascript event object
-  - 'view': A reference to the current view
+  ```typescript
+  function (eventClickInfo) { }
+  ```
 
-* **onEventMouseover**: Is emitted when the mouse is moved over an event.
+  ```eventClickInfo``` is a plain object with the following properties:
 
-  - 'calEvent': the calender event object
-  - 'jsEvent': the native javascript event object
-  - 'view': A reference to the current view
+  | prop | description |
+  | --- | --- |
+  | event |	The associated Event Object. |
+  | el | The HTML element for this event. |
+  | jsEvent | The native JavaScript event with low-level information such as click coordinates. |
+  | view | The current View Object. |
 
-* **onEventMouseout**: Is emitted when the mouse is moved away and is no longer over an event.
+* **onEventMouseEnter**: Is emitted when the mouse is moved over an event.
 
-  - 'calEvent': the calender event object
-  - 'jsEvent': the native javascript event object
-  - 'view': A reference to the current view
+  ```typescript
+  function (mouseEnterInfo) { }
+  ```
+
+  ```mouseEnterInfo``` is a plain object with the following properties:
+
+  | prop | description |
+  | --- | --- |
+  | event | The associated Event Object. |
+  | el | The HTML element for this event. |
+  | jsEvent | The native JavaScript event with low-level information such as click coordinates. |
+  | view | The current View Object. |
+
+* **onEventMouseLeave**: Is emitted when the mouse is moved away and is no longer over an event.
+
+  ```typescript
+  function (mouseLeaveInfo) { }
+  ```
+
+  ```mouseLeaveInfo``` is a plain object with the following properties:
+
+  | prop | description |
+  | --- | --- |
+  | event | The associated Event Object. |
+  | el | The HTML element for this event. |
+  | jsEvent | The native JavaScript event with low-level information such as click coordinates. |
+  | view | The current View Object. |
 
 * **onEventDragStart**: Is emitted when event dragging begins.
 
-  - 'event': the calender event object
-  - 'jsEvent': the native javascript event object
-  - 'view': A reference to the current view
+  ```typescript
+  function (info) { }
+  ```
+
+  ```info``` is a plain object with the following properties:
+
+  | prop | description |
+  | --- | --- |
+  | event | An Event Object that holds information about the event (date, title, etc) **after** the drop. |
+  | jsEvent | The native JavaScript event with low-level information such as click coordinates. |
+  | view | The current View Object. |
 
 * **onEventDragStop**: Is emitted when event dragging stops.
 
-  - 'event': the calender event object
-  - 'jsEvent': the native javascript event object
-  - 'view': A reference to the current view
+  ```typescript
+  function (info) { }
+  ```
+
+  ```info``` is a plain object with the following properties:
+
+  | prop | description |
+  | --- | --- |
+  | event | An Event Object that holds information about the event (date, title, etc) **after** the drop. |
+  | jsEvent | The native JavaScript event with low-level information such as click coordinates. |
+  | view | The current View Object. |
 
 * **onEventDrop**: Is emitted when dragging stops and the event has moved to a *different day/time*.
 
-  - 'event': the calender event object
-  - 'delta': is a Duration object that represents the amount of time the event was moved by
-  - 'revertFunc': is a function that, if called, reverts the event’s start/end date to the values before the drag
-  - 'jsEvent': the native javascript event object
-  - 'view': A reference to the current view
+  ```typescript
+  function (eventDropInfo) { }
+  ```
+
+  ```eventDropInfo``` is a plain object with the following properties:
+
+  | prop | description |
+  | --- | --- |
+  | event | An Event Object that holds information about the event (date, title, etc) **after** the drop. |
+  | prevEvent | An Event Object that holds information about the event before the drop. |
+  | delta | A Duration Object that represents the amount of time the event was moved by. |
+  | revert | A function that, if called, reverts the event’s start/end date to the values before the drag. This is useful if an ajax call should fail. |
+  | jsEvent | The native JavaScript event with low-level information such as click coordinates. |
+  | view | The current View Object. |
 
 * **onEventReceive**: Is emitted when a valid external UI draggable, containing event data, has been dropped onto the calendar.
 
-  - 'event': the calender event object
+  ```typescript
+  function (info) { }
+  ```
+
+  ```info``` is a plain object with the following properties:
+
+  | prop | description |
+  | --- | --- |
+  | draggedEl | The HTML element that was being dragged. |
+  | event | An Event object containing the newly created/received event. |
+  | view | The current View Object. |
 
 * **onEventResizeStart**: Is emitted when event resizing begins.
 
-  - 'event': the calender event object
-  - 'jsEvent': the native javascript event object
-  - 'view': A reference to the current view
+  ```typescript
+  function (info) { }
+  ```
+
+  ```info``` is a plain object with the following properties:
+
+  | prop | description |
+  | --- | --- |
+  | event | An Event Object that holds information about the event (date, title, etc) **after** the drop. |
+  | jsEvent | The native JavaScript event with low-level information such as click coordinates. |
+  | view | The current View Object. |
 
 * **onEventResizeStop**: Is emitted when event resizing stops.
 
-  - 'event': the calender event object
-  - 'jsEvent': the native javascript event object
-  - 'view': A reference to the current view
+  ```typescript
+  function (info) { }
+  ```
+
+  ```info``` is a plain object with the following properties:
+
+  | prop | description |
+  | --- | --- |
+  | event | An Event Object that holds information about the event (date, title, etc) **after** the drop. |
+  | jsEvent | The native JavaScript event with low-level information such as click coordinates. |
+  | view | The current View Object. |
 
 * **onEventResize**: Is emitted when resizing stops and the event has changed in duration.
 
-  - 'event': the calender event object
-  - 'delta': is a Duration object that represents the amount of time the event was moved by
-  - 'revertFunc': is a function that, if called, reverts the event’s start/end date to the values before the drag
-  - 'jsEvent': the native javascript event object
-  - 'view': A reference to the current view
+  ```typescript
+  function (eventResizeInfo) { }
+  ```
 
-* **onViewRender**: Is emitted when a new date-range is rendered, or when the view type switches.
+  ```eventResizeInfo``` is a plain object with the following properties:
 
-  - 'view': A reference to the current view
-  - 'element': Is an element for the container of the new view
+  | prop | description |
+  | --- | --- |
+  | event | An Event Object that holds information about the event (date, title, etc) after the resize. |
+  | prevEvent | An Event Object that holds information about the event before the resize. |
+  | startDelta | A Duration Object that represents the amount of time the event’s start date was moved by. |
+  | endDelta | A Duration Object that represents the amount of time the event’s end date was moved by. |
+  | revert | A function that, if called, reverts the event’s start/end date to the values before the drag. This is useful if an ajax call should fail. |
+  | view | The current View Object. |
 
-* **onViewDestroy**: Is emitted when a rendered date-range needs to be torn down
+* **onDatesRender**: Is emitted when a new date-range is rendered, or when the view type switches.
 
-  - 'view': A reference to the current view
-  - 'element': Is an element for the container of the new view
+  ```typescript
+  function (info) { }
+  ```
+
+  ```info``` is a plain object with the following properties:
+
+  | prop | description |
+  | --- | --- |
+  | view | The current View Object. |
+  | el | The HTML element for the container of the current view. |
+
+* **onDatesDestroy**: Is emitted when a rendered date-range needs to be torn down
+
+  ```typescript
+  function (info) { }
+  ```
+
+  ```info``` is a plain object with the following properties:
+
+  | prop | description |
+  | --- | --- |
+  | view | The current View Object. |
+  | el | The HTML element for the container of the current view. |
+
+* **onViewSkeletonRender**: Is emitted after a view’s non-date-related DOM structure has been rendered.
+
+  ```typescript
+  function (info) { }
+  ```
+
+  ```info``` is a plain object with the following properties:
+
+  | prop | description |
+  | --- | --- |
+  | view | The current View Object. |
+  | el | The HTML element for the container of the current view. |
+
+* **onViewSkeletonDestroy**: Is emitted before a view’s DOM skeleton is removed from the DOM.
+
+  ```typescript
+  function (info) { }
+  ```
+
+  ```info``` is a plain object with the following properties:
+
+  | prop | description |
+  | --- | --- |
+  | view | The current View Object. |
+  | el | The HTML element for the container of the current view. |
 
 * **onNavLinkDayClick**: Is emitted upon a day heading nav-link being clicked.
 
-  - 'weekStart': the view name (string), function
+  - 'date': the view name (string), function
   - 'jsEvent': the native javascript event object
 
 * **onNavLinkWeekClick**: Is emitted upon a week-number nav-link being clicked.
@@ -251,21 +411,107 @@ There are also the following events that can be bound:
 
 * **onEventRender**: Is emitted while an event is being rendered. A hook for modifying its DOM.
 
-  - 'event': the calender event object
-  - 'element': Is an element for the container of the new view
-  - 'view': A reference to the current view
+  ```typescript
+  function (info) { }
+  ```
+
+  ```info``` is a plain object with the following properties:
+
+  | prop | description |
+  | --- | --- |
+  | event | The associated Event Object. |
+  | el | The HTML element that is being rendered. It has already been populated with the correct time/title text. |
+  | isMirror | true if the element being rendered is a “mirror” from a user drag, resize, or selection (see selectMirror). false otherwise. |
+  | isStart | true if the element being rendered is the starting slice of the event’s range. false otherwise. |
+  | isEnd | true if the element being rendered is the ending slice of the event’s range. false otherwise. |
+  | view | The current View Object. |
 
 * **onEventDestroy**: Is emitted before an event’s element is removed from the DOM.
 
-  - 'event': the calender event object
-  - 'element': Is an element for the container of the new view
-  - 'view': A reference to the current view
+  ```typescript
+  function (info) { }
+  ```
 
-* **onEventAfterRender**: Is emitted after an event has been placed on the calendar in its final position.
+  ```info``` is a plain object with the following properties:
 
-  - 'event': the calender event object
-  - 'element': Is an element for the container of the new view
-  - 'view': A reference to the current view
+  | prop | description |
+  | --- | --- |
+  | event | The associated Event Object. |
+  | el | The HTML element that is being rendered. It has already been populated with the correct time/title text. |
+  | view | The current View Object. |
+
+* **onEventPositioned**" Is emitted after an event has been placed on the calendar in its final position.
+
+  ```typescript
+  function (info) { }
+  ```
+
+  ```info``` is a plain object with the following properties:
+
+  | prop | description |
+  | --- | --- |
+  | event | The associated Event Object. |
+  | el | The HTML element that is being rendered. |
+  | isMirror | ```true``` if the element being rendered is a “mirror” from a user drag, resize, or selection (see selectMirror). ```false``` otherwise. |
+  | isStart | ```true``` if the element being rendered is the starting slice of the event’s range. ```false``` otherwise. |
+  | isEnd | ```true``` if the element being rendered is the ending slice of the event’s range. ```false``` otherwise. |
+  | view | The current View Object. |
+
+* **onDayRender**: A hook for modifying a day cell’s DOM.
+
+  ```typescript
+  function (info) { }
+  ```
+
+  ```info``` is a plain object with the following properties:
+
+  | prop | description |
+  | --- | --- |
+  |date | The Date for the given day. |
+  |el | The HTML element for the given day. |
+  |view | The current View Object. |
+
+* **onSelect**: Is emitted when a date/time selection is made.
+
+  ```typescript
+  function (selectionInfo) { }
+  ```
+
+  ```selectionInfo``` is a plain object with the following properties:
+
+  | prop | description |
+  | --- | --- |
+  | start | a Date indicating the beginning of the selection. |
+  | end | a Date indicating the end of the selection.<br><br>**It is an exclusive value**, so if the selection is all-day, and the last day is a Thursday, ```end``` will be Friday. |
+  | startStr | An ISO8601 string representation of the start date. Will have a time zone offset according to the calendar’s timeZone like ```2018-09-01T12:30:00-05:00```. If selecting all-day cells, won’t have a time part nor a time zone part, like ```2018-09-01```. |
+  | endStr | Just like ```startStr```, but for the ```end``` date. |
+  | allDay | ```true``` or ```false``` whether the selection happened on all-day cells. |
+  | jsEvent | The native JavaScript event with low-level information such as click coordinates. |
+  | view | The current View Object. |
+  | resource | If the current view is a resource-view, the Resource Object that was selected. Must be using the Scheduler plugin. |
+
+* **onUnselect**: A hook for modifying a day cell’s DOM.
+
+  ```typescript
+  function (jsEvent, view) { }
+  ```
+
+  - 'jsEvent': the native javascript event object
+  - 'view': The current View Object.
+
+* **onResourceRender**: A hook for modifying a day cell’s DOM.
+
+  ```typescript
+  function (renderInfo) { }
+  ```
+
+  ```renderInfo``` is a plain object with the following properties:
+
+  | prop | description |
+  | --- | --- |
+  | resource | The Resource Object being rendered. |
+  | el | The DOM element that represents this resource. Most likely a that wraps the resource’s title. |
+  | view | The current View. |
 
 # API
 
@@ -273,9 +519,10 @@ View the [Official fullcalendar docs](https://fullcalendar.io/docs#toc) for full
 
 # TODO
 
-* Support all remaining events
-* Fully support Scheduler properties
+* Support of any events currently not exposed
+* Additional properties and options not yet exposed
 * Enhance access to API
+* Expose types for event objects as well as Date formatter and Duration
 * 
 
 # License
