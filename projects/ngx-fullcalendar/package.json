@@ -16,11 +16,9 @@
   "homepage": "https://github.com/StickNitro/ngx-fullcalendar",
   "description": "An Angular wrapper for the fullcalendar and fullcalendar-scheduler module",
   "peerDependencies": {
-    "@angular/common": "^6.0.0",
-    "@angular/core": "^6.0.0",
-    "fullcalendar": "4.0.0-alpha",
-    "fullcalendar-scheduler": "4.0.0-alpha.2",
-    "moment": "^2.23.0",
-    "dragula": "^3.7.2"
+    "@angular/common": ">=6.0.0",
+    "@angular/core": ">=6.0.0",
+    "fullcalendar": ">=4.0.0-alpha.3",
+    "fullcalendar-scheduler": ">=4.0.0-alpha.3"
   }
 }

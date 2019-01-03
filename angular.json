@@ -62,13 +62,11 @@
               "projects/ngx-fullcalendar-test/src/assets"
             ],
             "styles": [
-              "./node_modules/dragula/dist/dragula.min.css",
               "./node_modules/fullcalendar/dist/fullcalendar.min.css",
               "./node_modules/fullcalendar-scheduler/dist/scheduler.min.css",
               "projects/ngx-fullcalendar-test/src/styles.scss"
             ],
             "scripts": [
-              "./node_modules/dragula/dist/dragula.min.js",
               "./node_modules/fullcalendar/dist/fullcalendar.min.js",
               "./node_modules/fullcalendar-scheduler/dist/scheduler.min.js"
             ]
