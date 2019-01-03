@@ -122,8 +122,8 @@ export class FullCalendarComponent implements OnInit, OnDestroy, AfterViewChecke
 
   ngOnInit() {
     this.config = this.safeGenerateConfig();
-    this.config.resources = (callback) => {
-      callback(this.resources || []);
+    this.config.resources = (fetchInfo, successCallback, failureCallback) => {
+      successCallback(this.resources || []);
     };
     this.config.dayClick = (date, jsEvent, view, resourceId?) => {
       this.onDayClick.emit({
@@ -303,10 +303,10 @@ export class FullCalendarComponent implements OnInit, OnDestroy, AfterViewChecke
   }
 
   private initialize() {
-    FullCalendar.dragula({
-      containers: [this.droppableRef],
-      copy: true
-    });
+    // FullCalendar.dragula({
+    //   containers: [this.droppableRef],
+    //   copy: true
+    // });
     this.calendar = new FullCalendar.Calendar(this.el.nativeElement, this.config);
     this.calendar.render();
     if (this.events) {

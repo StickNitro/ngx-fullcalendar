@@ -71,7 +71,6 @@
               "./node_modules/moment/moment.js",
               "./node_modules/dragula/dist/dragula.min.js",
               "./node_modules/fullcalendar/dist/fullcalendar.min.js",
-              "./node_modules/fullcalendar/dist/dragula.min.js",
               "./node_modules/fullcalendar-scheduler/dist/scheduler.min.js"
             ]
           },

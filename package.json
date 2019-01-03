@@ -28,8 +28,8 @@
     "@angular/router": "~7.0.0",
     "core-js": "^2.5.4",
     "dragula": "^3.7.2",
-    "fullcalendar": "^4.0.0-alpha",
-    "fullcalendar-scheduler": "^4.0.0-alpha.2",
+    "fullcalendar": "^4.0.0-alpha.3",
+    "fullcalendar-scheduler": "^4.0.0-alpha.3",
     "moment": "^2.23.0",
     "rxjs": "~6.3.3",
     "zone.js": "~0.8.26"
