@@ -40,7 +40,7 @@ const defaultConfig: FullCalendarOptions = {
   selector: 'ngx-fullcalendar',
   template: ` `
 })
-export class FullcalendarComponent implements OnInit, OnDestroy, AfterViewChecked, DoCheck, OnChanges {
+export class FullCalendarComponent implements OnInit, OnDestroy, AfterViewChecked, DoCheck, OnChanges {
 
   @Input() droppableRef: any;
   @Input() options: FullCalendarOptions;

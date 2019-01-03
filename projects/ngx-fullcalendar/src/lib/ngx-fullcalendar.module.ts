@@ -1,14 +1,14 @@
-import { FullcalendarComponent } from './fullcalendar.component';
+import { FullCalendarComponent } from './fullcalendar.component';
 import { NgModule } from '@angular/core';
 
 @NgModule({
   declarations: [
-    FullcalendarComponent
+    FullCalendarComponent
   ],
   imports: [
   ],
   exports: [
-    FullcalendarComponent
+    FullCalendarComponent
   ]
 })
-export class NgxFullcalendarModule { }
+export class NgxFullCalendarModule { }
