@@ -2,5 +2,182 @@
   "$schema": "./node_modules/@angular/cli/lib/config/schema.json",
   "version": 1,
   "newProjectRoot": "projects",
-  "projects": {}
+  "projects": {
+    "ngx-fullcalendar": {
+      "root": "projects/ngx-fullcalendar",
+      "sourceRoot": "projects/ngx-fullcalendar/src",
+      "projectType": "library",
+      "prefix": "ngx",
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-ng-packagr:build",
+          "options": {
+            "tsConfig": "projects/ngx-fullcalendar/tsconfig.lib.json",
+            "project": "projects/ngx-fullcalendar/ng-package.json"
+          }
+        },
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "main": "projects/ngx-fullcalendar/src/test.ts",
+            "tsConfig": "projects/ngx-fullcalendar/tsconfig.spec.json",
+            "karmaConfig": "projects/ngx-fullcalendar/karma.conf.js"
+          }
+        },
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": [
+              "projects/ngx-fullcalendar/tsconfig.lib.json",
+              "projects/ngx-fullcalendar/tsconfig.spec.json"
+            ],
+            "exclude": [
+              "**/node_modules/**"
+            ]
+          }
+        }
+      }
+    },
+    "ngx-fullcalendar-test": {
+      "root": "projects/ngx-fullcalendar-test/",
+      "sourceRoot": "projects/ngx-fullcalendar-test/src",
+      "projectType": "application",
+      "prefix": "app",
+      "schematics": {
+        "@schematics/angular:component": {
+          "styleext": "scss"
+        }
+      },
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-angular:browser",
+          "options": {
+            "outputPath": "dist/ngx-fullcalendar-test",
+            "index": "projects/ngx-fullcalendar-test/src/index.html",
+            "main": "projects/ngx-fullcalendar-test/src/main.ts",
+            "polyfills": "projects/ngx-fullcalendar-test/src/polyfills.ts",
+            "tsConfig": "projects/ngx-fullcalendar-test/tsconfig.app.json",
+            "assets": [
+              "projects/ngx-fullcalendar-test/src/favicon.ico",
+              "projects/ngx-fullcalendar-test/src/assets"
+            ],
+            "styles": [
+              "./node_modules/dragula/dist/dragula.min.css",
+              "./node_modules/fullcalendar/dist/fullcalendar.min.css",
+              "./node_modules/fullcalendar-scheduler/dist/scheduler.min.css",
+              "projects/ngx-fullcalendar-test/src/styles.scss"
+            ],
+            "scripts": [
+              "./node_modules/moment/moment.js",
+              "./node_modules/dragula/dist/dragula.min.js",
+              "./node_modules/fullcalendar/dist/fullcalendar.min.js",
+              "./node_modules/fullcalendar/dist/dragula.min.js",
+              "./node_modules/fullcalendar-scheduler/dist/scheduler.min.js"
+            ]
+          },
+          "configurations": {
+            "production": {
+              "fileReplacements": [
+                {
+                  "replace": "projects/ngx-fullcalendar-test/src/environments/environment.ts",
+                  "with": "projects/ngx-fullcalendar-test/src/environments/environment.prod.ts"
+                }
+              ],
+              "optimization": true,
+              "outputHashing": "all",
+              "sourceMap": false,
+              "extractCss": true,
+              "namedChunks": false,
+              "aot": true,
+              "extractLicenses": true,
+              "vendorChunk": false,
+              "buildOptimizer": true,
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "2mb",
+                  "maximumError": "5mb"
+                }
+              ]
+            }
+          }
+        },
+        "serve": {
+          "builder": "@angular-devkit/build-angular:dev-server",
+          "options": {
+            "browserTarget": "ngx-fullcalendar-test:build"
+          },
+          "configurations": {
+            "production": {
+              "browserTarget": "ngx-fullcalendar-test:build:production"
+            }
+          }
+        },
+        "extract-i18n": {
+          "builder": "@angular-devkit/build-angular:extract-i18n",
+          "options": {
+            "browserTarget": "ngx-fullcalendar-test:build"
+          }
+        },
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "main": "projects/ngx-fullcalendar-test/src/test.ts",
+            "polyfills": "projects/ngx-fullcalendar-test/src/polyfills.ts",
+            "tsConfig": "projects/ngx-fullcalendar-test/tsconfig.spec.json",
+            "karmaConfig": "projects/ngx-fullcalendar-test/karma.conf.js",
+            "styles": [
+              "projects/ngx-fullcalendar-test/src/styles.scss"
+            ],
+            "scripts": [],
+            "assets": [
+              "projects/ngx-fullcalendar-test/src/favicon.ico",
+              "projects/ngx-fullcalendar-test/src/assets"
+            ]
+          }
+        },
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": [
+              "projects/ngx-fullcalendar-test/tsconfig.app.json",
+              "projects/ngx-fullcalendar-test/tsconfig.spec.json"
+            ],
+            "exclude": [
+              "**/node_modules/**"
+            ]
+          }
+        }
+      }
+    },
+    "ngx-fullcalendar-test-e2e": {
+      "root": "projects/ngx-fullcalendar-test-e2e/",
+      "projectType": "application",
+      "prefix": "",
+      "architect": {
+        "e2e": {
+          "builder": "@angular-devkit/build-angular:protractor",
+          "options": {
+            "protractorConfig": "projects/ngx-fullcalendar-test-e2e/protractor.conf.js",
+            "devServerTarget": "ngx-fullcalendar-test:serve"
+          },
+          "configurations": {
+            "production": {
+              "devServerTarget": "ngx-fullcalendar-test:serve:production"
+            }
+          }
+        },
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": "projects/ngx-fullcalendar-test-e2e/tsconfig.e2e.json",
+            "exclude": [
+              "**/node_modules/**"
+            ]
+          }
+        }
+      }
+    }
+  },
+  "defaultProject": "ngx-fullcalendar-test"
 }

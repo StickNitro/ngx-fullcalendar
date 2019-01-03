@@ -1,13 +1,19 @@
 {
   "name": "ngx-fullcalendar",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
     "build": "ng build",
     "test": "ng test",
     "lint": "ng lint",
-    "e2e": "ng e2e"
+    "e2e": "ng e2e",
+    "build_lib": "ng build ngx-fullcalendar",
+    "copy_license": "cp ./LICENSE ./dist/ngx-fullcalendar",
+    "copy_readme": "cp ./README.md ./dist/ngx-fullcalendar",
+    "copy_files": "npm run copy_license && npm run copy_readme",
+    "npm_pack": "cd dist/ngx-fullcalendar && npm pack",
+    "package": "npm run build_lib && npm run copy_files && npm run npm_pack"
   },
   "private": true,
   "dependencies": {
@@ -21,10 +27,16 @@
     "@angular/platform-browser-dynamic": "~7.0.0",
     "@angular/router": "~7.0.0",
     "core-js": "^2.5.4",
+    "dragula": "^3.7.2",
+    "fullcalendar": "^4.0.0-alpha",
+    "fullcalendar-scheduler": "^4.0.0-alpha.2",
+    "moment": "^2.23.0",
     "rxjs": "~6.3.3",
     "zone.js": "~0.8.26"
   },
   "devDependencies": {
+    "@angular-devkit/build-angular": "~0.10.0",
+    "@angular-devkit/build-ng-packagr": "~0.10.0",
     "@angular/cli": "~7.0.6",
     "@angular/compiler-cli": "~7.0.0",
     "@angular/language-service": "~7.0.0",
@@ -39,8 +51,11 @@
     "karma-coverage-istanbul-reporter": "~2.0.1",
     "karma-jasmine": "~1.1.2",
     "karma-jasmine-html-reporter": "^0.2.2",
+    "ng-packagr": "^4.2.0",
     "protractor": "~5.4.0",
     "ts-node": "~7.0.0",
+    "tsickle": ">=0.29.0",
+    "tslib": "^1.9.0",
     "tslint": "~5.11.0",
     "typescript": "~3.1.6"
   }

@@ -16,6 +16,14 @@
     "lib": [
       "es2018",
       "dom"
-    ]
+    ],
+    "paths": {
+      "ngx-fullcalendar": [
+        "dist/ngx-fullcalendar"
+      ],
+      "ngx-fullcalendar/*": [
+        "dist/ngx-fullcalendar/*"
+      ]
+    }
   }
 }
