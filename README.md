@@ -10,6 +10,8 @@
 
 This package wraps the [fullcalendar](https://fullcalendar.io) module for Angular v6 and above.
 
+## Access to the latest changes for fullcalendar v4 alpha 3 (fullcalendar and scheduler) can be found in the [`upgrade-v4-alpha`](https://github.com/StickNitro/ngx-fullcalendar/tree/upgrade-v4-alpha) branch and can be installed from [NPM](https://www.npmjs.com/package/ngx-fullcalendar/v/5.0.0-alpha.0)
+
 # Installation
 
 Install via [NPM](https://npmjs.com)
