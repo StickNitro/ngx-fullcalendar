@@ -13,7 +13,8 @@
     "copy_readme": "cp ./README.md ./dist/ngx-fullcalendar",
     "copy_files": "npm run copy_license && npm run copy_readme",
     "npm_pack": "cd dist/ngx-fullcalendar && npm pack",
-    "package": "npm run build_lib && npm run copy_files && npm run npm_pack"
+    "package": "npm run build_lib && npm run copy_files && npm run npm_pack",
+    "prepare": "npm run build_lib && npm run copy_files && npm run npm_pack"
   },
   "private": true,
   "dependencies": {
