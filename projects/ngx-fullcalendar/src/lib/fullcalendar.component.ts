@@ -12,11 +12,11 @@ import {
   Output,
   SimpleChanges,
 } from '@angular/core';
-import { Calendar, Draggable, formatDate } from 'fullcalendar';
+import {Calendar, Draggable, formatDate} from 'fullcalendar';
 
-import { EventObject } from './event.object';
-import { FullCalendarOptions } from './fullcalendar-options';
-import { ResourceObject } from './resource-object';
+import {EventObject} from './event.object';
+import {FullCalendarOptions} from './fullcalendar-options';
+import {ResourceObject} from './resource-object';
 
 // declare const FullCalendar: any;
 
@@ -44,7 +44,7 @@ const defaultConfig: FullCalendarOptions = {
   defaultRangeSeparator: ' - ',
   dir: 'ltr',
   defaultTimedEventDuration: '01:00',
-  defaultAllDayEventDuration: { days: 1 },
+  defaultAllDayEventDuration: {days: 1},
   eventOrder: 'start,-duration,allDay,title',
   rerenderDelay: null
 };
@@ -154,7 +154,7 @@ export class FullCalendarComponent implements OnInit, OnDestroy, AfterViewChecke
   config: any;
 
   constructor(private el: ElementRef,
-    differs: IterableDiffers) {
+              differs: IterableDiffers) {
     this.eventDiffer = differs.find([]).create(null);
     this.resourceDiffer = differs.find([]).create(null);
     this.initialized = false;
@@ -288,7 +288,7 @@ export class FullCalendarComponent implements OnInit, OnDestroy, AfterViewChecke
   ngDoCheck() {
     const eventChanges = this.eventDiffer.diff(this.events);
     if (this.calendar && eventChanges) {
-      this.calendar.removeEventSources();
+      this.calendar.getEventSources().forEach(ev => ev.remove());
       if (this.events) {
         this.calendar.addEventSource(this.events);
       }
