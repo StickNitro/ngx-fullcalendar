@@ -14,8 +14,11 @@
     "copy_files": "npm run copy_license && npm run copy_readme",
     "npm_pack": "cd dist/ngx-fullcalendar && npm pack",
     "package": "npm run build_lib && npm run copy_files && npm run npm_pack",
-    "postinstall": "npm run package"
+    "prepare": "npm run package"
   },
+  "files": [
+    "dist"
+  ],
   "private": true,
   "dependencies": {
     "@angular/animations": "~7.0.0",
