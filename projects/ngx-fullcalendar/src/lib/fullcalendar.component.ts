@@ -419,7 +419,11 @@ export class FullCalendarComponent implements OnInit, OnDestroy, AfterViewChecke
   }
 
   removeUndefinedProperties<T>(object: Object): T {
-    return JSON.parse(JSON.stringify(typeof object === 'object' ? object : {}));
+    Object.keys(object).forEach(key => {
+      if (object[key] && typeof object[key] === 'object') this.removeUndefinedProperties(object[key]);
+      else if (object[key] === undefined) delete object[key];
+    });
+    return object;
   }
 
 }
