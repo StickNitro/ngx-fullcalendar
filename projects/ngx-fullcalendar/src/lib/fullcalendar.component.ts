@@ -12,11 +12,11 @@ import {
   Output,
   SimpleChanges,
 } from '@angular/core';
-import {Calendar, Draggable, formatDate} from 'fullcalendar';
+import { Calendar, Draggable, formatDate } from 'fullcalendar';
 
-import {EventObject} from './event.object';
-import {FullCalendarOptions} from './fullcalendar-options';
-import {ResourceObject} from './resource-object';
+import { EventObject } from './event.object';
+import { FullCalendarOptions } from './fullcalendar-options';
+import { ResourceObject } from './resource-object';
 
 // declare const FullCalendar: any;
 
@@ -44,7 +44,7 @@ const defaultConfig: FullCalendarOptions = {
   defaultRangeSeparator: ' - ',
   dir: 'ltr',
   defaultTimedEventDuration: '01:00',
-  defaultAllDayEventDuration: {days: 1},
+  defaultAllDayEventDuration: { days: 1 },
   eventOrder: 'start,-duration,allDay,title',
   rerenderDelay: null
 };
@@ -154,7 +154,7 @@ export class FullCalendarComponent implements OnInit, OnDestroy, AfterViewChecke
   config: any;
 
   constructor(private el: ElementRef,
-              differs: IterableDiffers) {
+    differs: IterableDiffers) {
     this.eventDiffer = differs.find([]).create(null);
     this.resourceDiffer = differs.find([]).create(null);
     this.initialized = false;
@@ -392,15 +392,16 @@ export class FullCalendarComponent implements OnInit, OnDestroy, AfterViewChecke
   }
 
   private _updateEvent(event: any) {
-    console.log(event);
-    const sourceEvent = this._findEvent(event.id);
-    if (sourceEvent) {
-      sourceEvent.start = formatDate(event.start);
-      if (event.end) {
-        sourceEvent.end = formatDate(event.end);
-      }
-      if (event.resourceId) {
-        sourceEvent.resourceId = event.resourceId;
+    if (!!event) {
+      const sourceEvent = this._findEvent(event.id);
+      if (sourceEvent) {
+        sourceEvent.start = formatDate(event.start);
+        if (event.end) {
+          sourceEvent.end = formatDate(event.end);
+        }
+        if (event.resourceId) {
+          sourceEvent.resourceId = event.resourceId;
+        }
       }
     }
   }
@@ -420,10 +421,13 @@ export class FullCalendarComponent implements OnInit, OnDestroy, AfterViewChecke
 
   removeUndefinedProperties<T>(object: Object): T {
     Object.keys(object).forEach(key => {
-      if (object[key] && typeof object[key] === 'object') this.removeUndefinedProperties(object[key]);
-      else if (object[key] === undefined) delete object[key];
+      if (object[key] && typeof object[key] === 'object') {
+        this.removeUndefinedProperties(object[key]);
+      } else if (object[key] === undefined) {
+        delete object[key];
+      }
     });
-    return object;
+    return object as T;
   }
 
 }
