@@ -47,4 +47,5 @@ export interface FullCalendarOptions {
   }
   selectable?: boolean;
   resources?: any;
+  slotLabelFormat?: any;
 }
