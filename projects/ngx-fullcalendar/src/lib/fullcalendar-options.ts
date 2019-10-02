@@ -36,4 +36,16 @@ export interface FullCalendarOptions {
   eventConstraint?: any;
   dayRender?: Function;
   navLinks?: boolean;
+  buttonText?: {
+    today?: string;
+    month?: string;
+    week?: string;
+    day?: string;
+    list?: string;
+    agendaWeek?: string;
+    agendaDay?: string;
+  }
+  selectable?: boolean;
+  resources?: any;
+  slotLabelFormat?: any;
 }
